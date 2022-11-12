@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Country Finder</title>
+    <style>
+      #all_countries{
+        display:grid;
+        grid-template-columns: repeat(4,1fr);
+        gap:10px
+      }
+      
+      #all_countries>div{
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+      }
+     
+      /* Write all necessery css here  */
+    </style>
+  </head>
+  <body>
+    <select id="sort_population">
+      <option value="">Sort By Population</option>
+      <option value="asc">ASC</option>
+      <option value="desc">DESC</option>
+    </select>
+    <select id="filter_region">
+      <option value="">Filter By Region</option>
+      <option value="Africa">Africa</option>
+      <option value="Americas">Americas</option>
+      <option value="Asia">Asia</option>
+      <option value="Europe">Europe</option>
+      <option value="Oceania">Oceania</option>
+    </select>
+    <div id="all_countries">
+      <!-- Append Country Cards here  -->
+    </div>
+  </body>
+  <script>
+    let url="https://restcountries.com/v3.1/all"
+    let bag=[]
+    async function getData(){
+      try{
+        let res=await fetch(url)
+        let out=await res.json()
+        bag=out
+        
+        displaycard(bag)
+      }catch (err){
+        alert (err)
+      }
+    }
+    getData()
+
+    document.querySelector("#sort_population").addEventListener("change",population)
+
+    function population(){
+      let selected=document.querySelector("#sort_population").value
+
+      if(selected=="asc"){
+        bag.sort((a,b)=>a.population-b.population)
+         
+      }else if(selected=="desc"){
+        bag.sort((a,b)=>b.population-a.population)
+       
+      }
+      displaycard(bag)
+        
+    }
+     
+    function displaycard(bag){
+      document.querySelector("#all_countries").innerHTML=""
+      bag.forEach(element => {
+        let div=document.createElement("div")
+        let name = document.createElement("h3")
+        name.innerText=element.name.common
+        let image=document.createElement("img")
+        image.setAttribute("src",element.flags.png)
+        let population=document.createElement("p")
+        population.innerText=element.population
+        let region=document.createElement("p")
+        region.innerText=element.region
+        let capital=document.createElement("p")
+        capital.innerText=element.capital
+        document.querySelector("#all_countries").append(div)
+        div.append(image,name,population,region,capital)
+      });
+     
+    }
+
+    document.querySelector("#filter_region").addEventListener("change",filteredData)
+
+    function filteredData(){
+      let selected=document.querySelector("#filter_region").value
+      let selected1=document.querySelector("#sort_population").value
+     let filtereddata= bag.filter(function(element){
+        return element.region==selected
+      })
+     
+      displaycard(filtereddata)
+      if(selected1=="asc"){
+        filtereddata.sort((a,b)=>a.population-b.population)
+        displaycard(filtereddata)
+      }else if(selected1=="desc"){
+        filtereddata.sort((a,b)=>b.population-a.population)
+        displaycard(filtereddata)
+      }
+
+    }
+     
+   
+
+    
+      
+    
+    // Write all necessery JS here
+  </script>
+</html>
